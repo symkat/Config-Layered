@@ -107,16 +107,16 @@ A source requires at least two methods, `new` and `get_config`.
 
 The `new` method should take the following arguments and return an instance of itself:
 
-`$caller` is the instance of [Config::Layered](http://search.cpan.org/perldoc?Config::Layered) which called it.  You may look at all
+`$layered` is the instance of [Config::Layered](http://search.cpan.org/perldoc?Config::Layered) which called it.  You may look at all
 arguments given at construction of the instance.
 
 `$arguments` is the source-specific configuration information.  You should __NOT__ parse
 `$config->sources` yourself, instead look at `$arguments`, and optionally fall-back
-to using information in `$caller` to make decisions.
+to using information in `$layered` to make decisions.
 
     sub new {
-        my ( $class, $caller, $args ) = @_;
-        my $self = bless { caller => $caller, args => $args }, $class;
+        my ( $class, $layered, $args ) = @_;
+        my $self = bless { layered => $layered, args => $args }, $class;
         return $self;
     }
 
@@ -135,8 +135,8 @@ Example:
         if ( exists $self->{args}->{file} ) {
             return Config::Any->load_file( { file => $self->{args}->{file} );
         # Otherwise, load the global file with Config::Any
-        } elsif ( exists $config->{caller}->{file} ) 
-            return Config::Any->load_file( { file => $self->{caller}->{file} );
+        } elsif ( exists $config->{layered}->{file} ) 
+            return Config::Any->load_file( { file => $self->{layered}->{file} );
         }
         # No configuration file, our source is being ignored.
         return {};
@@ -145,7 +145,7 @@ Example:
 ## GLOBAL OR SOURCE ARGUMENTS?
 
 Config::Layered will accept any constructor arguments and a source may
-look at `$caller` to check them.  However, source instance specific arguments
+look at `$layered` to check them.  However, source instance specific arguments
 are also available.  Both should be supported under the following reasoning:
 
 Suppose that I would like to load a global file, but I would also like to merge arguments
