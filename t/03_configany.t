@@ -4,7 +4,7 @@ use strict;
 use Config::Layered;
 use Test::More;
 
-my @tests = [
+my $tests = [
     {
         put => {  },
         argv => [ qw( ) ],
@@ -33,9 +33,9 @@ my @tests = [
 
 for my $test ( @$tests ) {
     @ARGV = @{ $test->{argv} }; # Simulate command line input.
-    is_deeply Config::Layered->get_config( file => "t/etc/config", default => $test->{put} ), 
+    is_deeply( Config::Layered->load_config( file => "t/etc/config", default => $test->{put} ), 
         $test->{get}, 
-        $test->{title};
+        $test->{title});
 }
 
 done_testing;

@@ -1,9 +1,10 @@
 #!/usr/bin/perl
 use warnings;
 use strict;
+use Config::Layered;
 use Test::More;
 
-my @tests = [
+my $tests = [
     {
         put => { verbose => 1, run => 0, },
         get => { verbose => 1, run => 0, },
@@ -33,9 +34,9 @@ my @tests = [
 ];
 
 for my $test ( @$tests ) {
-    is_deeply Config::Layered->get_config( default => $test->{put} ), 
+    is_deeply( Config::Layered->load_config( default => $test->{put} ), 
         $test->{get}, 
-        $test->{title};
+        $test->{title} );
 }
 
 done_testing;
