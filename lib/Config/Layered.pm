@@ -3,19 +3,118 @@ use warnings;
 use strict;
 
 sub new {
+    my ( $class, %args ) = @_;
+    my $self = bless {}, $class;
+
+    for ( qw( sources default merge ) ) {
+        $self->can($_) || $self->_build_accessor($_);
+    }
+
+    for my $arg ( keys %args ) {
+        $self->_build_accessor( $arg ) unless $self->can($arg);
+
+        if ( $arg eq 'sources' ) {
+            $self->$arg( $self->_normalize_sources($args{$arg}) );
+        } else {
+            $self->$arg( $args{$arg} );
+        }
+    }
+
+    $self->default( {} ) 
+        unless $self->default;
+
+    $self->sources( [ [ 'ConfigAny' => {} ], [ 'Getopt' => {} ] ] ) 
+        unless $self->sources;
+
+    return $self;
 
 }
 
 sub load_config {
+    my ( $self, @args ) = @_;
 
+    # Allow to skip calling ->new()->load_config
+    return $self->new( @args )->load_config unless ref $self eq __PACKAGE__;
+
+    my $config = $self->default;
+
+    for my $source ( @{ $self->sources } ) {
+        my $pkg = $self->_load_source( $source->[0] );
+        $config = $self->_merge( $config, $pkg->get_config(  ) );
+    }
+
+    return $config;
 }
 
 sub _normalize_sources {
+    my ( $self ) = @_;
 
+    my @new_sources;
+    while ( my $source = shift @{$self->{sources}} ) {
+        if ( ref @{$self->{sources}}[0] eq 'HASH' ) {
+            push @new_sources, { $source, shift @{$self->{sources}} };
+        } else {
+            push @new_sources, { $source, {} };
+        }
+    }
+    $self->{sources} = [@new_sources];
+}
+
+sub _build_accessor {
+    my ( $self, $method ) = @_;
+    
+    my $accessor = sub {
+        my $self = shift;
+        $self->{$method} = shift if @_;
+        return $self->{$method};
+    };
+    {
+        no strict 'refs';
+        *$method = $accessor;
+    }
+    return ();
 }
 
 sub _load_source {
+    my ( $self, $source ) = @_;
+    
+    my $class = "Config::Layered::Source::$source";
 
+    eval "require $class";
+    if ( $@ ) {
+        eval "require $source";
+        if ( $@ ) {
+            die "Couldn't find $source or $class";
+        } else {
+            $class = $source;
+        }
+    }
+
+    return $class;
+}
+
+sub _merge {
+    my ( $self, $content, $data ) = @_;
+
+    # Allow this method to be replaced by a coderef.
+    return $self->merge->( $content, $data ) if ref $self->merge eq 'CODE';
+
+    if ( ref $content eq 'HASH' ) {
+        for my $key ( keys %$content ) {
+            if ( ref $content->{$key} eq 'HASH' ) {
+                $content->{$key} = merge($content->{$key}, $data->{$key});
+                delete $data->{$key};
+            } else {
+                $content->{$key} = $data->{$key} if exists $data->{$key};
+            }
+        }
+        # Unhandled keys (simply do injection on uneven rhs structure)
+        for my $key ( keys %$data ) {
+            $content->{$key} = delete $data->{$key};
+        }
+    }
+
+    return $content;
 }
 
 1;

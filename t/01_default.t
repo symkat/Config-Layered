@@ -34,7 +34,7 @@ my $tests = [
 ];
 
 for my $test ( @$tests ) {
-    is_deeply( Config::Layered->load_config( default => $test->{put} ), 
+    is_deeply( Config::Layered->load_config( default => $test->{put}, sources => [  ] ), 
         $test->{get}, 
         $test->{title} );
 }
