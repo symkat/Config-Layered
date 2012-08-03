@@ -155,17 +155,36 @@ By default options will be taken from the program source code itself, then
 
 Given the above, the data structure would look like:
 
-    TODO
+    
+    {
+        verbose => 0,
+        run             => 1,
+        input           => "/tmp/to_process",
+        output          => "/tmp/done_processing",
+        plugins         => [ qw( process ) ] 
+    }
 
 Provided a file, C</etc/myapp.yml> with the line C<input: /tmp/pending_process> 
 the data structure would look like:
 
-    TODO
+    {
+        verbose => 0,
+        run             => 1,
+        input           => "/tmp/pending_process",
+        output          => "/tmp/done_processing",
+        plugins         => [ qw( process ) ] 
+    }
 
 Provided the command line arguments C<--norun --verbose --output /tmp/completed_process>
-the data structure would look like:
+-- in addition to the configuration file above -- the data structure would look like:
 
-    TODO
+    {
+        verbose         => 1,
+        run             => 0,
+        input           => "/tmp/pending_process",
+        output          => "/tmp/completed_process",
+        plugins         => [ qw( process ) ] 
+    }
 
 =head1 METHODS
 
@@ -215,11 +234,21 @@ and the following hashref will be sent to the source.  This allows source-specif
 configuration to be used.  For more information on creating a soure, see
 L</CREATING A SOURCE>.
 
-=item * merge_method
+=item * merge
 
 You may provide a method as a coderef that will be used to merge the data
 structures returned from a source together.  By default the method used favors
 the newer sources that are loaded.
+
+Example:
+
+    merge => sub {
+        my ( $lhs, $rhs ) = @_;
+
+        ... Do something with the data structures ...
+
+        return $merged_data_structure;
+    }
 
 =back
 
