@@ -1,6 +1,8 @@
 package Config::Layered;
 use warnings;
 use strict;
+use Data::Dumper;
+use Storable qw( dclone );
 
 sub new {
     my ( $class, %args ) = @_;
@@ -39,8 +41,11 @@ sub load_config {
     my $config = $self->default;
 
     for my $source ( @{ $self->sources } ) {
-        my $pkg = $self->_load_source( $source->[0] );
-        $config = $self->_merge( $config, $pkg->get_config(  ) );
+        print "Processing source: $source->[0]\n";
+        my $pkg = $self->_load_source( $source->[0] )
+            ->new( $self, $source->[1] );
+
+        $config = $self->_merge( $config, dclone($pkg->get_config) );
     }
 
     return $config;
@@ -102,10 +107,10 @@ sub _merge {
     if ( ref $content eq 'HASH' ) {
         for my $key ( keys %$content ) {
             if ( ref $content->{$key} eq 'HASH' ) {
-                $content->{$key} = merge($content->{$key}, $data->{$key});
+                $content->{$key} = $self->_merge($content->{$key}, $data->{$key});
                 delete $data->{$key};
             } else {
-                $content->{$key} = $data->{$key} if exists $data->{$key};
+                $content->{$key} = delete $data->{$key} if exists $data->{$key};
             }
         }
         # Unhandled keys (simply do injection on uneven rhs structure)

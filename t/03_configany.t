@@ -20,13 +20,13 @@ my $tests = [
     {
         put => { foo => "blee"  },
         argv => [ qw( --foo blee ) ],
-        get => { bar => [ qw( this that ) ], foo => "bar", blee => "baz" },
+        get => { bar => [ qw( this that ) ], foo => "blee", blee => "baz" },
         title => "CLI preferred over config.",
     },
     {
         put => { foo => "blee", baz => "boom",  },
         argv => [ qw( --foo blee ) ],
-        get => { bar => [ qw( this that ) ], foo => "bar", blee => "baz", baz => "boom" },
+        get => { bar => [ qw( this that ) ], foo => "blee", blee => "baz", baz => "boom" },
         title => "Source extends config file.",
     },
 ];

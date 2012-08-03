@@ -8,7 +8,7 @@ my $tests = [
     {
         put => { verbose => 1, run => 0, },
         argv => [ qw( ) ],
-        get => { verbose => 0, run => 0, },
+        get => { verbose => 1, run => 0, },
         title => "Flags - Change Neither",
     },
     {
@@ -62,7 +62,7 @@ my $tests = [
     {
         put => { verbose => 0, run => "yes", },
         argv => [ qw( --verbose --run no) ],
-        get => { verbose => 0, run => "no", },
+        get => { verbose => 1, run => "no", },
         title => "Flags + Strings -- Change Both",
     },
     {
