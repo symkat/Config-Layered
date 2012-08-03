@@ -4,6 +4,9 @@ use strict;
 use Data::Dumper;
 use Storable qw( dclone );
 
+our $VERSION = '0.000001'; # 0.0.1
+$VERSION = eval $VERSION;
+
 sub new {
     my ( $class, %args ) = @_;
     my $self = bless {}, $class;
