@@ -92,6 +92,8 @@ data structure.
 =item * prefix is a word prepended to your key that is used to check 
 C<$ENV{$prefix . "_" . uc($key) }>.
 
+=back
+
 Example:
 
     Config::Layered->load_config(

@@ -63,7 +63,7 @@ Example:
 
 The following keys would be checked:
 
-                - MYAPP\_BAR
-            - MYAPP\_BLEE
-        - MYAPP\_DEBUG
-    - MYAPP\_VERBOSE
+- MYAPP\_BAR
+- MYAPP\_BLEE
+- MYAPP\_DEBUG
+- MYAPP\_VERBOSE
