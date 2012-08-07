@@ -28,8 +28,11 @@ sub new {
     $self->default( {} ) 
         unless $self->default;
 
-    $self->sources( [ [ 'ConfigAny' => {} ], [ 'Getopt' => {} ] ] ) 
-        unless $self->sources;
+    $self->sources([ 
+            [ 'ConfigAny'       => {} ], 
+            [ 'ENV'             => {} ], 
+            [ 'Getopt'          => {} ],
+    ]) unless $self->sources;
 
     return $self;
 
@@ -142,7 +145,8 @@ By default options will be taken from the program source code itself, then
 =head1 SYNOPSIS
 
 By default options will be taken from the program source code itself, then
--- if provided -- a configuration file, and finally command-line options.
+merged -- if provided -- with a configuration file, then environment variables
+in the form of C<CONFIG_$OPTIONNAME> and finally command-line options.
 
     my $config = Config::Layered->load_config(
         file         => "/etc/myapp",
@@ -184,6 +188,17 @@ Provided the command line arguments C<--norun --verbose --output /tmp/completed_
         verbose         => 1,
         run             => 0,
         input           => "/tmp/pending_process",
+        output          => "/tmp/completed_process",
+        plugins         => [ qw( process ) ] 
+    }
+
+Provided the environment variable C<CONFIG_INPUT="/tmp/awaiting_process>
+-- in addition to the configuration file above -- the data structure would look like:
+
+    {
+        verbose         => 1,
+        run             => 0,
+        input           => "/tmp/awaiting_process",
         output          => "/tmp/completed_process",
         plugins         => [ qw( process ) ] 
     }
@@ -251,6 +266,22 @@ Example:
 
         return $merged_data_structure;
     }
+
+=back
+
+=head1 INCLUDED SOURCES
+
+Each source provides its own documentation for source-specific options,
+please see the POD pages for the source you're interested in learning more
+about
+
+=over4 
+
+=item * L<Config::Layered::Source::ConfigAny> is used for configuration files
+
+=item * L<Config::Layered::Source::ENV> is used for environment variables
+
+=item * L<Config::Layered::Sources::Getopt> is used for command-line options
 
 =back
 

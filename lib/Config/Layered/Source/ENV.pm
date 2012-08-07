@@ -26,7 +26,11 @@ sub get_config {
 
 1;
 
-=head2 ENV
+=head1 NAME
+
+Config::Layered::Source::ENV - The Environment Variable Source
+
+=head1 DESCRIPTION
 
 The ENV source provides configuration through environment variables.
 
@@ -34,7 +38,7 @@ For each top-level key in the default data structure, it checks for the
 environment variable C<CONFIG_$KEY> where $KEY is the name of the key used
 in the default data structure.
 
-=head3 Example
+=head1 EXAMPLE
 
     my $config = Config::Layered->load_config( 
         default => {
@@ -46,7 +50,7 @@ in the default data structure.
         }
     )
 
-With the above configuratio, the following keys will be checked:
+With the above configuration, the following keys will be checked:
 
 =over 4
 
@@ -78,7 +82,7 @@ C<$config> structure like this:
             chicken => "eggs",
     }
 
-=head3 SOURCE ARGUMENTS
+=head1 SOURCE ARGUMENTS
 
 =over 4
 
