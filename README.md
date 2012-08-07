@@ -14,7 +14,8 @@ By default options will be taken from the program source code itself, then
 # SYNOPSIS
 
 By default options will be taken from the program source code itself, then
-\-- if provided -- a configuration file, and finally command-line options.
+merged -- if provided -- with a configuration file, then environment variables
+in the form of `CONFIG_$OPTIONNAME` and finally command-line options.
 
     my $config = Config::Layered->load_config(
         file         => "/etc/myapp",
@@ -57,6 +58,17 @@ Provided the command line arguments `--norun --verbose --output /tmp/completed_p
         verbose         => 1,
         run             => 0,
         input           => "/tmp/pending_process",
+        output          => "/tmp/completed_process",
+        plugins         => [ qw( process ) ] 
+    }
+
+Provided the environment variable `CONFIG_INPUT="/tmp/awaiting_process`
+\-- in addition to the configuration file above -- the data structure would look like:
+
+    {
+        verbose         => 1,
+        run             => 0,
+        input           => "/tmp/awaiting_process",
         output          => "/tmp/completed_process",
         plugins         => [ qw( process ) ] 
     }
@@ -122,6 +134,16 @@ Example:
 
         return $merged_data_structure;
     }
+
+# INCLUDED SOURCES
+
+Each source provides its own documentation for source-specific options,
+please see the POD pages for the source you're interested in learning more
+about
+
+- [Config::Layered::Source::ConfigAny](http://search.cpan.org/perldoc?Config::Layered::Source::ConfigAny) is used for configuration files
+- [Config::Layered::Source::ENV](http://search.cpan.org/perldoc?Config::Layered::Source::ENV) is used for environment variables
+- [Config::Layered::Sources::Getopt](http://search.cpan.org/perldoc?Config::Layered::Sources::Getopt) is used for command-line options
 
 # CREATING A SOURCE
 
