@@ -24,6 +24,8 @@ sub get_config {
         
     return $config->[0]->{ (keys %{$config->[0]})[0] }
         if @{$config} == 1;
+
+    return {}; # If we couldn't load a config file.
 }
 
 sub layered {
