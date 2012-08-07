@@ -44,7 +44,6 @@ sub load_config {
     my $config = $self->default;
 
     for my $source ( @{ $self->sources } ) {
-        print "Processing source: $source->[0]\n";
         my $pkg = $self->_load_source( $source->[0] )
             ->new( $self, $source->[1] );
 
@@ -55,14 +54,14 @@ sub load_config {
 }
 
 sub _normalize_sources {
-    my ( $self ) = @_;
+    my ( $self, $sources ) = @_;
 
     my @new_sources;
-    while ( my $source = shift @{$self->{sources}} ) {
+    while ( my $source = shift @{$sources} ) {
         if ( ref @{$self->{sources}}[0] eq 'HASH' ) {
-            push @new_sources, { $source, shift @{$self->{sources}} };
+            push @new_sources, [ $source, shift @{$self->{sources}} ];
         } else {
-            push @new_sources, { $source, {} };
+            push @new_sources, [ $source, {} ];
         }
     }
     $self->{sources} = [@new_sources];
