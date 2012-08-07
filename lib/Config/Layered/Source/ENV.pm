@@ -2,12 +2,7 @@ package Config::Layered::Source::ENV;
 use warnings;
 use strict;
 use Storable qw( dclone );
-
-sub new {
-    my ( $class, $layered, $args ) = @_;
-    my $self = bless { layered => $layered, args => $args }, $class;
-    return $self;
-}
+use parent 'Config::Layered::Source';
 
 sub get_config {
     my ( $self ) = @_;
@@ -22,14 +17,6 @@ sub get_config {
     }
 
     return $config;
-}
-
-sub layered {
-    return shift->{layered};
-}
-
-sub args {
-    return shift->{args};
 }
 
 1;

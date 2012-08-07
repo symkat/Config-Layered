@@ -4,12 +4,7 @@ use strict;
 use Storable qw( dclone );
 use Getopt::Long;
 use Scalar::Util qw( looks_like_number );
-
-sub new {
-    my ( $class, $layered, $args ) = @_;
-    my $self = bless { layered => $layered, args => $args }, $class;
-    return $self;
-}
+use parent 'Config::Layered::Source';
 
 sub get_config {
     my ( $self ) = @_;
@@ -22,7 +17,7 @@ sub get_config {
             push @want, "$key=s@";
         } elsif ( ref $struct->{$key} eq 'HASH' ) {
             push @want, "$key=s%"
-        } elsif ( looks_like_number($struct->{$key}) && ( $struct->{$key} == 1 or $struct->{$key} == 0 ) )  {
+        } elsif ( _is_bool($struct->{$key}) ) {
             push @want, "$key!";
         } else {
             push @want, "$key=s";
@@ -34,12 +29,12 @@ sub get_config {
     return { %config };
 }
 
-sub layered {
-    return shift->{layered};
-}
-
-sub args {
-    return shift->{args};
+sub _is_bool {
+    my ( $any ) = @_;
+    return 0 unless looks_like_number($any);
+    return 1 if $any == 1;
+    return 1 if $any == 0;
+    return 0;
 }
 
 1;

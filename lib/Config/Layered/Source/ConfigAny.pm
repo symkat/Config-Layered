@@ -2,12 +2,7 @@ package Config::Layered::Source::ConfigAny;
 use warnings;
 use strict;
 use Config::Any;
-
-sub new {
-    my ( $class, $layered, $args ) = @_;
-    my $self = bless { layered => $layered, args => $args }, $class;
-    return $self;
-}
+use parent 'Config::Layered::Source';
 
 sub get_config {
     my ( $self ) = @_;
@@ -26,14 +21,6 @@ sub get_config {
         if @{$config} == 1;
 
     return {}; # If we couldn't load a config file.
-}
-
-sub layered {
-    return shift->{layered};
-}
-
-sub args {
-    return shift->{args};
 }
 
 1;
