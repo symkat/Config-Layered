@@ -48,7 +48,7 @@ in the default data structure.
                 chicken => "eggs",
             }
         }
-    )
+    );
 
 With the above configuration, the following keys will be checked:
 

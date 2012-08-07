@@ -45,7 +45,7 @@ file stem.
                 chicken => "eggs",
             }
         }
-    )
+    );
 
 
 Provided a file C</etc/myapp> with the following content:

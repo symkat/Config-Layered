@@ -34,7 +34,7 @@ configuration, previous run sources).
             bax         => { chicken => "eggs", }
             baz         => [ wq( foo bar blee ) ]
         }
-    )
+    );
 
 The above data structure would create the following Getopt::Long 
 configuration:
