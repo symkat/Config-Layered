@@ -2,7 +2,7 @@ package Config::Layered::Source::ENV;
 use warnings;
 use strict;
 use Storable qw( dclone );
-use parent 'Config::Layered::Source';
+use base 'Config::Layered::Source';
 
 sub get_config {
     my ( $self ) = @_;

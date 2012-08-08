@@ -2,7 +2,7 @@ package Config::Layered::Source::ConfigAny;
 use warnings;
 use strict;
 use Config::Any;
-use parent 'Config::Layered::Source';
+use base 'Config::Layered::Source';
 
 sub get_config {
     my ( $self ) = @_;

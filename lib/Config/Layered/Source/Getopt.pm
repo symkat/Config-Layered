@@ -4,7 +4,7 @@ use strict;
 use Storable qw( dclone );
 use Getopt::Long;
 use Scalar::Util qw( looks_like_number );
-use parent 'Config::Layered::Source';
+use base 'Config::Layered::Source';
 
 sub get_config {
     my ( $self ) = @_;
