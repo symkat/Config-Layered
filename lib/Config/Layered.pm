@@ -1,8 +1,9 @@
 package Config::Layered;
 use Storable qw( dclone );
 use Moo; # Imports warnings & strict
+use Template::ExpandHash qw( expand_hash );
 
-our $VERSION = '0.000004'; # 0.0.4
+our $VERSION = '0.000005'; # 0.0.5
 $VERSION = eval $VERSION;
 
 sub BUILD { 
@@ -20,6 +21,7 @@ has sources => (
 );
 
 has normalized_sources => (is => 'lazy');
+has process_template   => ( is => 'ro', default => sub { 1 } );
 
 # get_config is an alias for load_config.
 sub get_config { shift->load_config( @_ ) };
@@ -39,6 +41,7 @@ sub load_config {
         $config = $self->_merge( $config, dclone($pkg->get_config) );
     }
 
+    return expand_hash( $config ) if $self->process_template;
     return $config;
 }
 
