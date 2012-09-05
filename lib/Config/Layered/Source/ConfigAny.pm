@@ -8,7 +8,7 @@ sub get_config {
     my ( $self ) = @_;
 
     my $file = $self->args->{file};
-    $file = $self->layered->{file} unless $file;
+    $file = $self->layered->extra->{file} unless $file;
 
     return {} unless defined $file;
 

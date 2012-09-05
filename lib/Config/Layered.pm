@@ -1,42 +1,28 @@
 package Config::Layered;
-use warnings;
-use strict;
-use Data::Dumper;
 use Storable qw( dclone );
+use Moo; # Imports warnings & strict
 
-our $VERSION = '0.000003'; # 0.0.3
+our $VERSION = '0.000004'; # 0.0.4
 $VERSION = eval $VERSION;
 
-sub new {
-    my ( $class, %args ) = @_;
-    my $self = bless {}, $class;
-
-    for ( qw( sources default merge ) ) {
-        $self->can($_) || $self->_build_accessor($_);
-    }
-
-    for my $arg ( keys %args ) {
-        $self->_build_accessor( $arg ) unless $self->can($arg);
-
-        if ( $arg eq 'sources' ) {
-            $self->$arg( $self->_normalize_sources($args{$arg}) );
-        } else {
-            $self->$arg( $args{$arg} );
-        }
-    }
-
-    $self->default( {} ) 
-        unless $self->default;
-
-    $self->sources([ 
-            [ 'ConfigAny'       => {} ], 
-            [ 'ENV'             => {} ], 
-            [ 'Getopt'          => {} ],
-    ]) unless $self->sources;
-
-    return $self;
-
+sub BUILD { 
+    my ( $self, $args ) = @_;
+    $self->_set_extra( $args );
 }
+
+has default => (is => 'ro');
+has merge   => (is => 'ro');
+has extra   => (is => 'rwp');
+
+has sources => (
+    is => 'ro',
+    default => sub { [  'ConfigAny', 'ENV', 'Getopt' ] },
+);
+
+has normalized_sources => (is => 'lazy');
+
+# get_config is an alias for load_config.
+sub get_config { shift->load_config( @_ ) };
 
 sub load_config {
     my ( $self, @args ) = @_;
@@ -46,7 +32,7 @@ sub load_config {
 
     my $config = $self->default;
 
-    for my $source ( @{ $self->sources } ) {
+    for my $source ( @{ $self->normalized_sources } ) {
         my $pkg = $self->_load_source( $source->[0] )
             ->new( $self, $source->[1] );
 
@@ -56,38 +42,24 @@ sub load_config {
     return $config;
 }
 
-sub _normalize_sources {
+sub _build_normalized_sources {
     my ( $self, $sources ) = @_;
 
+    my @sources = @{$self->sources};
     my @new_sources;
-    while ( my $source = shift @{$sources} ) {
-        if ( ref @{$self->{sources}}[0] eq 'HASH' ) {
-            push @new_sources, [ $source, shift @{$self->{sources}} ];
+    while ( my $source = shift @sources ) {
+        if ( ref $sources[0] eq 'HASH' ) {
+            push @new_sources, [ $source, shift @sources ];
         } else {
             push @new_sources, [ $source, {} ];
         }
     }
-    $self->{sources} = [@new_sources];
-}
-
-sub _build_accessor {
-    my ( $self, $method ) = @_;
-    
-    my $accessor = sub {
-        my $self = shift;
-        $self->{$method} = shift if @_;
-        return $self->{$method};
-    };
-    {
-        no strict 'refs';
-        *$method = $accessor;
-    }
-    return ();
+    return \@new_sources;
 }
 
 sub _load_source {
     my ( $self, $source ) = @_;
-    
+
     my $class = "Config::Layered::Source::$source";
 
     eval "require $class";
