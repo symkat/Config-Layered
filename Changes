@@ -1,3 +1,9 @@
+09-05-2012 (0.0.5)
+    * Switched to using Moo instead of doing things manually.
+    * Config::Layered will now use Template::ExpandHash on
+      the final configuration data structure.
+    * Documentation Updates
+
 08-08-2012 (0.0.3)
     * Changed from use base to use parent for support in older systems.
 
