@@ -250,7 +250,7 @@ Each source provides its own documentation for source-specific options,
 please see the POD pages for the source you're interested in learning more
 about
 
-=over4 
+=over 4 
 
 =item * L<Config::Layered::Source::ConfigAny> is used for configuration files
 
